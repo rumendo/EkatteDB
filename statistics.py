@@ -41,20 +41,24 @@ except:
 
 
 city = raw_input("\nFor what city do you want more information: ")
-query = "SELECT * FROM city WHERE name = \'" + city + "\'";
-
+query = "SELECT * FROM city c JOIN municipality m ON c.municipality = m.municipality  JOIN region r ON m.region = r.region WHERE c.name = \'" + city + "\'";
+print(query);
 try:
 	x.execute(query)
 	result = x.fetchall()
 	for row in result:
-		print("\nEkatte-id: ")
-		print(row[0])
 		print("\nType: ")
 		print(row[1])
 		print("\nName: ")
 		print(row[2])
 		print("\nMunicipality: ")
 		print(row[3])
+		print(row[5])
+		print("\nRegion: ")
+		print(row[6])
+		print(row[9])
+		print("\nEkatte-id: ")
+		print(row[0])
 	con.commit()
 except:
 	con.rollback()

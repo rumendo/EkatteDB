@@ -41,16 +41,14 @@ except:
 
 
 city = raw_input("\nFor what city do you want more information: ")
-query = "SELECT * FROM city c JOIN municipality m ON c.municipality = m.municipality  JOIN region r ON m.region = r.region WHERE c.name = \'" + city + "\'";
-print(query);
+#query = "SELECT * FROM city c JOIN municipality m ON c.municipality = m.municipality  JOIN region r ON m.region = r.region WHERE c.name = \'" + city + "\'";
 try:
-	x.execute(query)
+	if(not x.execute("SELECT * FROM city c JOIN municipality m ON c.municipality = m.municipality  JOIN region r ON m.region = r.region WHERE c.name = %s", (city,))):
+		print("\nThe city you are trying to search does not exist.")
 	result = x.fetchall()
 	for row in result:
-		print("\nType: ")
-		print(row[1])
 		print("\nName: ")
-		print(row[2])
+		print(row[1] + " " + row[2])
 		print("\nMunicipality: ")
 		print(row[3])
 		print(row[5])

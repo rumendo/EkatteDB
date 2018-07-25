@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <style>
+    table{
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 15px;
+    }
+    th, td{
+      border-right: 1px solid black;
+      border-top: 1px solid black;
+      border-collapse: collapse;
+      padding: 10px 10px 10px 10px;
+    }
+  </style>
+  <form>
+    <input name="city" list="city" id="city" placeholder="Enter a city name..">
+    <input type="button" id="search" value="Search" onclick="searchCity();">
+    <input type="button" value="Show statistics" onclick="showStatistics();">
+  </form>
+  <br>
+  <div id="statistics"></div>
+  <div id="searchResponse">
+    <table id="searchData">
+    </table>
+    <br>
+    <table id="showStats">
+    </table>
+  </div>
+<script>
+
+function showStatistics(){
+  var url = 'http://localhost:8000/ekatteStatistics';
+  downloadUrl(url, function(result){
+    document.getElementById('showStats').innerHTML = '';
+    var table = document.getElementById('showStats');
+    var header = table.createTHead();
+    var rowHead = header.insertRow(0);
+    var headCity = rowHead.insertCell(0);
+    var headMunicipality = rowHead.insertCell(1);
+    var headRegion = rowHead.insertCell(2);
+    headCity.innerHTML = "Name";
+    headMunicipality.innerHTML = "Municipality";
+    headRegion.innerHTML = "Region";
+    var row = table.insertRow(1);
+    var region = row.insertCell(0);
+    var municipality = row.insertCell(1);
+    var city = row.insertCell(2);
+
+    city.innerHTML = result[2];
+    municipality.innerHTML = result[1];
+    region.innerHTML =  result[0];
+  });
+}
+
+function searchCity(){
+ var city = document.getElementById('city').value;
+ var url = 'http://localhost:8000/ekatteResponse/?city=' + city;
+ downloadUrl(url, function(result){
+   document.getElementById('searchData').innerHTML = '';
+   var table = document.getElementById('searchData');
+   var header = table.createTHead();
+   var rowHead = header.insertRow(0);
+   var headCity = rowHead.insertCell(0);
+   var headMunicipality = rowHead.insertCell(1);
+   var headRegion = rowHead.insertCell(2);
+   headCity.innerHTML = "Name";
+   headMunicipality.innerHTML = "Municipality";
+   headRegion.innerHTML = "Region";
+   result.forEach(function(element) {
+     var row = table.insertRow(1);
+     var city = row.insertCell(0);
+     var municipality = row.insertCell(1);
+     var region = row.insertCell(2);
+     city.innerHTML = element[1] + " " + element[2];
+     municipality.innerHTML = element[3] + " - " + element[5];
+     region.innerHTML =  element[6] + " - " + element[9] + "<br>";
+   });
+ });
+}
+
+function downloadUrl(url, callback) {
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        if(this.responseText === "The city you are trying to search does not exist.")
+          document.getElementById('searchResponse').innerHTML = this.responseText;
+        else
+          callback(JSON.parse(this.responseText));
+      }
+  };
+  xmlhttp.open("GET", url, true);
+  xmlhttp.send();
+}
+
+</script>
+</body>
+</html>

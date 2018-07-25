@@ -9,6 +9,9 @@ import json
 import MySQLdb
 import csv
 
+def invert_dict(d):
+    return {v:k for k,v in d.items()}
+
 def index(request):
     con = MySQLdb.connect(
     	host="localhost",
@@ -20,15 +23,15 @@ def index(request):
 
     with open('cyrillicMapping.csv') as csvfile:
         content = csv.reader(csvfile, delimiter=',')
-        cyrillicList = list(content)
+        cyrillicList = invert_dict(dict(content))
 
+    print(cyrillicList)
     city = ''
     cityRaw = request.GET['city'].split(';')
     for letterCode in cityRaw:
-        for char in cyrillicList:
-            if letterCode[2:]==char[1]:
-                foundLetter = char[0]
-                city += foundLetter
+        if letterCode[2:] in cyrillicList:
+            foundLetter = cyrillicList[letterCode[2:]]
+            city += foundLetter
 
     try:
     	print("Number of regions:")
